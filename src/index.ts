@@ -6,6 +6,7 @@ import express from "express";
 import axios from "axios";
 import { TwitterApi } from "twitter-api-v2";
 import { AiReply } from "./RAG/Query.ts";
+import cron from "node-cron";
 
 const app = express();
 app.use(express.json()); 
@@ -81,6 +82,39 @@ app.post("/reply", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+const usernames = ["elonmusk", "naval", "pmarca"]; 
+
+cron.schedule("*/5 * * * *", async () => {
+  console.log("⏰ Running cron job for users:", usernames);
+
+  for (const username of usernames) {
+    try {
+      const { data } = await axios.get(`http://localhost:${PORT}/user/${username}`);
+      const tweets = data.tweets;
+
+      if (!tweets || tweets.length === 0) {
+        console.log(`No tweets found for @${username}`);
+        continue;
+      }
+      for (const tweet of tweets) {
+        try {
+          await axios.post(`http://localhost:${PORT}/reply`, {
+            tweetId: tweet.id,
+            tweetText: tweet.text,
+          });
+          console.log(` Replied to @${username}'s tweet ${tweet.id}`);
+        } catch (err: any) {
+          console.error(`Failed to reply to @${username}'s tweet ${tweet.id}:`, err.message);
+        }
+      }
+    } catch (error: any) {
+      console.error(`Error fetching tweets for @${username}:`, error.message);
+    }
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
