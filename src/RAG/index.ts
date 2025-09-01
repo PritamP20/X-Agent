@@ -101,4 +101,4 @@ async function main() {
 }
 
 // Uncomment to run indexing
-main().catch(console.error);
+// main().catch(console.error);

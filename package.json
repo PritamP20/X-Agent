@@ -21,7 +21,13 @@
     "@langchain/pinecone": "^0.2.0",
     "@langchain/textsplitters": "^0.1.0",
     "@pinecone-database/pinecone": "^6.1.2",
+    "@types/axios": "^0.9.36",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "express": "^5.1.0",
     "langchain": "^0.3.31",
     "pdf-parse": "^1.1.1",
     "pinecone": "^0.1.0"

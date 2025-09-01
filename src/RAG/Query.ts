@@ -91,26 +91,26 @@ return replyText;
 }
 
 
-async function main() {
+// async function main() {
 
-    console.log("Pinecone API Key:", process.env.PINECONE_API_KEY);
-console.log("Pinecone Index Name:", process.env.PINECONE_INDEX_NAME);
+//     console.log("Pinecone API Key:", process.env.PINECONE_API_KEY);
+// console.log("Pinecone Index Name:", process.env.PINECONE_INDEX_NAME);
 
 
-  const tweets = [
-    "I love learning TypeScript, it makes coding so much fun! 🎉",
-    "bro this framework is trash, who even uses it anymore lol 💀",
-    "Having a coffee while debugging is the best combo ☕🐛",
-  ];
+//   const tweets = [
+//     "I love learning TypeScript, it makes coding so much fun! 🎉",
+//     "bro this framework is trash, who even uses it anymore lol 💀",
+//     "Having a coffee while debugging is the best combo ☕🐛",
+//   ];
 
-  for (const tweet of tweets) {
-    console.log("\n===============================");
-    console.log("📢 Tweet:", tweet);
+//   for (const tweet of tweets) {
+//     console.log("\n===============================");
+//     console.log("📢 Tweet:", tweet);
 
-    const reply = await AiReply(tweet);
+//     const reply = await AiReply(tweet);
 
-    console.log("🤖 AI Reply:", reply);
-  }
-}
+//     console.log("🤖 AI Reply:", reply);
+//   }
+// }
 
-main().catch(console.error);
+// main().catch(console.error);
