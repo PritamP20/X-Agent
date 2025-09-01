@@ -27,17 +27,15 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
         
         console.log(`✅ PDF loaded successfully! Found ${rawDocs.length} pages`);
 
-        // Enhanced text splitting with better parameters
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 1000,
             chunkOverlap: 200,
-            separators: ["\n\n", "\n", ". ", " ", ""] // Better splitting logic
+            separators: ["\n\n", "\n", ". ", " ", ""] 
         });
 
         const chunkedDocs = await textSplitter.splitDocuments(rawDocs);
         console.log(`🔪 Document split into ${chunkedDocs.length} chunks`);
 
-        // Add metadata to chunks for better retrieval
         const enrichedDocs = chunkedDocs.map((doc, index) => ({
             ...doc,
             metadata: {
@@ -52,7 +50,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
             apiKey: process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY : "gemini api key",
             model: "text-embedding-004"
         });
-        console.log("🧠 Google Gemini embedding client created");
+        console.log(" Google Gemini embedding client created");
 
         const pinecone = new Pinecone({
             apiKey: process.env.PINECONE_API_KEY ? process.env.PINECONE_API_KEY: "pine api key"
@@ -66,7 +64,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
             maxConcurrency: 5
         });
 
-        console.log("✅ Documents successfully stored in vector database!");
+        console.log(" Documents successfully stored in vector database!");
         
         return {
             success: true,
@@ -87,10 +85,8 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
     }
 }
 
-// Run this function once to index your documents
 async function main() {
 
-    // console.log("Pine cone env: ", process.env.PINECONE_API_KEY)
     const result = await indexDocument('./Shitpost.pdf');
     if (result.success) {
         console.log(`🎉 Indexing complete!`);
@@ -100,5 +96,4 @@ async function main() {
     }
 }
 
-// Uncomment to run indexing
 // main().catch(console.error);
