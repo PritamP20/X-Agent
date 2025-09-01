@@ -58,7 +58,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
             apiKey: process.env.PINECONE_API_KEY ? process.env.PINECONE_API_KEY: "pine api key"
         });
 
-        const pineconeIndex = pinecone.Index("pinecone index name");
+        const pineconeIndex = pinecone.Index("xagent");
 
         console.log("🌲 Storing documents in Pinecone...");
         await PineconeStore.fromDocuments(enrichedDocs, embeddings, {
@@ -91,7 +91,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
 async function main() {
 
     // console.log("Pine cone env: ", process.env.PINECONE_API_KEY)
-    const result = await indexDocument('./Dsa.pdf');
+    const result = await indexDocument('./Shitpost.pdf');
     if (result.success) {
         console.log(`🎉 Indexing complete!`);
         console.log(`📊 Stats: ${result.documentsProcessed} documents, ${result.chunksCreated} chunks`);
