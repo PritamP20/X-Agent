@@ -7,7 +7,7 @@ import { AiReply } from "./RAG/Query.ts";
 
 const app = express();
 const PORT = 3000;
-const BEARER_TOKEN = process.env.BEARER_TOKEN;
+const BEARER_TOKEN = process.env.BEARER_TOKEN!;
 
 let cachedUserId: string | null = null;
 

@@ -30,6 +30,7 @@
     "express": "^5.1.0",
     "langchain": "^0.3.31",
     "pdf-parse": "^1.1.1",
-    "pinecone": "^0.1.0"
+    "pinecone": "^0.1.0",
+    "twitter-api-v2": "^1.25.0"
   }
 }
