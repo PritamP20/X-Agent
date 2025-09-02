@@ -5,7 +5,7 @@ dotenv.config({ path: "./RAG/env" });
 import express from "express";
 import axios from "axios";
 import { TwitterApi } from "twitter-api-v2";
-import { AiReply } from "./RAG/Query.ts";
+import { AiReply } from "./ShitPostRAG/Query.ts";
 import cron from "node-cron";
 
 const app = express();
@@ -83,39 +83,52 @@ app.post("/reply", async (req, res) => {
   }
 });
 
-const usernames = ["elonmusk", "naval", "pmarca"]; 
+const TARGET_USERS = ["CNodmand36816", "elonmusk", "jack"]; 
 
-cron.schedule("*/5 * * * *", async () => {
-  console.log("⏰ Running cron job for users:", usernames);
+async function setupStream() {
+  console.log("🎧 Setting up filtered stream...");
 
-  for (const username of usernames) {
+  console.log(BEARER_TOKEN)
+  const appOnlyClient = new TwitterApi(BEARER_TOKEN);
+
+  const rules = await appOnlyClient.v2.streamRules();
+  if (rules.data?.length) {
+    await appOnlyClient.v2.updateStreamRules({
+      delete: { ids: rules.data.map(r => r.id) }
+    });
+  }
+
+  await appOnlyClient.v2.updateStreamRules({
+    add: TARGET_USERS.map(username => ({ value: `from:${username}` }))
+  });
+
+  const stream = await appOnlyClient.v2.searchStream({ "tweet.fields": ["author_id"] });
+
+  for await (const { data } of stream) {
+    console.log(`Tweet from user ${data.author_id}:`, data.text);
+
     try {
-      const { data } = await axios.get(`http://localhost:${PORT}/user/${username}`);
-      const tweets = data.tweets;
-
-      if (!tweets || tweets.length === 0) {
-        console.log(`No tweets found for @${username}`);
-        continue;
-      }
-      for (const tweet of tweets) {
-        try {
-          await axios.post(`http://localhost:${PORT}/reply`, {
-            tweetId: tweet.id,
-            tweetText: tweet.text,
-          });
-          console.log(` Replied to @${username}'s tweet ${tweet.id}`);
-        } catch (err: any) {
-          console.error(`Failed to reply to @${username}'s tweet ${tweet.id}:`, err.message);
-        }
-      }
-    } catch (error: any) {
-      console.error(`Error fetching tweets for @${username}:`, error.message);
+      await axios.post(`http://localhost:${PORT}/reply`, {
+        tweetId: data.id,
+        tweetText: data.text
+      });
+      console.log(`📡 Forwarded tweet ${data.id} to /reply endpoint`);
+    } catch (err) {
+      console.error("Failed to call /reply:", err);
     }
   }
-});
+}
 
 
+app.get("/stream", async (req, res)=>{
+  try {
+    setupStream()
+    res.json({message: "streamline started"})
+  } catch (error) {
+    res.json({error: error})
+  }
+})
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -15,9 +15,9 @@ interface IndexingResult {
     error?: string;
 }
 
-export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise<IndexingResult> {
+export async function indexDocument(pdfPath: string = './Reply-shitpost.pdf'): Promise<IndexingResult> {
     try {
-        console.log(` Loading PDF from: ${pdfPath}`);
+        console.log(`📄 Loading PDF from: ${pdfPath}`);
         const pdfLoader = new PDFLoader(pdfPath);
         const rawDocs = await pdfLoader.load();
         
@@ -25,7 +25,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
             throw new Error("No documents found in PDF");
         }
         
-        console.log(` PDF loaded successfully! Found ${rawDocs.length} pages`);
+        console.log(`PDF loaded successfully! Found ${rawDocs.length} pages`);
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 1000,
@@ -34,7 +34,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
         });
 
         const chunkedDocs = await textSplitter.splitDocuments(rawDocs);
-        console.log(`🔪 Document split into ${chunkedDocs.length} chunks`);
+        console.log(` Document split into ${chunkedDocs.length} chunks`);
 
         const enrichedDocs = chunkedDocs.map((doc, index) => ({
             ...doc,
@@ -56,7 +56,7 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
             apiKey: process.env.PINECONE_API_KEY ? process.env.PINECONE_API_KEY: "pine api key"
         });
 
-        const pineconeIndex = pinecone.Index("xagent");
+        const pineconeIndex = pinecone.Index("reply-xagent");
 
         console.log(" Storing documents in Pinecone...");
         await PineconeStore.fromDocuments(enrichedDocs, embeddings, {
@@ -87,13 +87,13 @@ export async function indexDocument(pdfPath: string = './Shitpost.pdf'): Promise
 
 async function main() {
 
-    const result = await indexDocument('./Shitpost.pdf');
+    const result = await indexDocument('./Reply-shitpost.pdf');
     if (result.success) {
-        console.log(` Indexing complete!`);
+        console.log(`Indexing complete!`);
         console.log(`Stats: ${result.documentsProcessed} documents, ${result.chunksCreated} chunks`);
     } else {
-        console.error(" Indexing failed:", result.error);
+        console.error("Indexing failed:", result.error);
     }
 }
 
-// main().catch(console.error);
+main().catch(console.error);
